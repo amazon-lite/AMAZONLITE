@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AMAZON LIGHT — Mobile E-Commerce</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            amazon: {
+              orange: '#ff9900',
+              orangeDark: '#e68a00',
+              blue: '#007185',
+              yellow: '#ffd814',
+              yellowHover: '#f7ca00',
+              lightBg: '#f3f3f3',
+              green: '#008a00',
+              darkGreen: '#067d62'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Font Awesome Icons & Google Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #e3e6e6;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Custom Scrollbar for Horizontal Banners & Categories */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Full-Screen Green Tick Draw Animation */
+    .checkmark-circle {
+      stroke-dasharray: 166;
+      stroke-dashoffset: 166;
+      stroke-width: 3;
+      stroke-miterlimit: 10;
+      stroke: #ffffff;
+      fill: none;
+      animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+
+    .checkmark-check {
+      transform-origin: 50% 50%;
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+      animation: stroke 0.4s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
+    }
+
+    @keyframes stroke {
+      100% {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @keyframes scaleIn {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .animate-scale-in {
+      animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    .animate-fade-in {
+      animation: fadeIn 0.3s ease-in-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="flex justify-center bg-gray-900 min-h-screen font-sans antialiased text-gray-900">
+
+  <!-- Mobile Viewport Wrapper -->
+  <div class="w-full max-w-md bg-white min-h-screen flex flex-col justify-between shadow-2xl relative overflow-x-hidden pb-16">
+    
+    <!-- Top Sticky Header -->
+    <header class="sticky top-0 z-40 bg-gradient-to-r from-[#ff7e00] to-[#ff9900] shadow-md">
+      <!-- Top Branding Bar -->
+      <div class="px-3 pt-2.5 pb-1 flex items-center justify-between">
+        <!-- AMAZON LIGHT Logo Header with 4-Tap Admin Trigger -->
+        <div onclick="handleLogoTap()" class="cursor-pointer flex items-center space-x-1.5 select-none">
+          <i class="fa-brands fa-amazon text-gray-900 text-xl font-bold"></i>
+          <span class="text-sm font-black text-gray-900 tracking-tight">AMAZON <span class="text-white font-extrabold bg-gray-900/80 px-1.5 py-0.5 rounded text-[11px] uppercase tracking-wider">LIGHT</span></span>
+        </div>
+        <div class="flex items-center space-x-3 text-gray-900 text-sm">
+          <span id="user-display-name" class="text-xs font-bold truncate max-w-[100px]">Hello, Guest</span>
+          <i class="fa-regular fa-bell text-base cursor-pointer" onclick="showToast('No new notifications')"></i>
+        </div>
+      </div>
+
+      <!-- Main Search Bar Area -->
+      <div class="px-3 pb-2 flex items-center space-x-2">
+        <div class="relative flex-1 flex items-center">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 text-gray-500 text-sm"></i>
+          <input type="text" id="global-search-input" onkeyup="handleSearch(this.value)" placeholder="Search Amazon.in" class="w-full pl-9 pr-16 py-2 bg-white text-xs text-gray-900 rounded-md focus:outline-none shadow-inner border border-gray-300">
+          <div class="absolute right-2 flex items-center space-x-2 text-gray-500 text-sm">
+            <i class="fa-solid fa-camera cursor-pointer hover:text-gray-800"></i>
+            <i class="fa-solid fa-qrcode cursor-pointer hover:text-gray-800"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delivery Location Sub-Bar -->
+      <div onclick="navigateTo('address')" class="bg-amber-100/90 px-3 py-1.5 flex items-center space-x-1.5 text-[11px] text-gray-800 border-t border-amber-200 cursor-pointer">
+        <i class="fa-solid fa-location-dot text-gray-700 text-xs"></i>
+        <span id="header-location-text" class="font-medium truncate">Delivering to Jammu 180002 - Update location</span>
+        <i class="fa-solid fa-chevron-down text-[9px] text-gray-600"></i>
+      </div>
+    </header>
+
+    <!-- Main Dynamic Content Container -->
+    <main id="main-content" class="flex-1 bg-[#e3e6e6]">
+      <!-- Views will be dynamically injected here -->
+    </main>
+
+    <!-- Fixed Bottom 5-Tab Navigation -->
+    <nav class="fixed bottom-0 max-w-md w-full bg-white border-t border-gray-300 z-40 flex items-center justify-around py-1.5 px-1 text-gray-700 shadow-lg">
+      <button onclick="navigateTo('home')" id="nav-home" class="flex flex-col items-center flex-1 py-1 text-amazon-orange font-bold">
+        <i class="fa-solid fa-house text-lg"></i>
+        <span class="text-[10px] mt-0.5">Home</span>
+      </button>
+
+      <button onclick="navigateTo('you')" id="nav-you" class="flex flex-col items-center flex-1 py-1 text-gray-600 hover:text-gray-900">
+        <i class="fa-regular fa-user text-lg"></i>
+        <span class="text-[10px] mt-0.5">You</span>
+      </button>
+
+      <button onclick="navigateTo('wallet')" id="nav-wallet" class="flex flex-col items-center flex-1 py-1 text-gray-600 hover:text-gray-900">
+        <i class="fa-solid fa-wallet text-lg"></i>
+        <span class="text-[10px] mt-0.5">Wallet</span>
+      </button>
+
+      <button onclick="navigateTo('cart')" id="nav-cart" class="flex flex-col items-center flex-1 py-1 text-gray-600 hover:text-gray-900 relative">
+        <div class="relative">
+          <i class="fa-solid fa-cart-shopping text-lg"></i>
+          <span id="nav-cart-badge" class="absolute -top-1.5 -right-2.5 bg-rose-600 text-white text-[9px] font-black rounded-full h-4 w-4 flex items-center justify-center">0</span>
+        </div>
+        <span class="text-[10px] mt-0.5">Cart</span>
+      </button>
+
+      <button onclick="navigateTo('menu')" id="nav-menu" class="flex flex-col items-center flex-1 py-1 text-gray-600 hover:text-gray-900">
+        <i class="fa-solid fa-bars text-lg"></i>
+        <span class="text-[10px] mt-0.5">Menu</span>
+      </button>
+    </nav>
+
+    <!-- Full Screen Green Success Animation Screen (Hidden by default) -->
+    <div id="full-green-success-screen" class="fixed inset-0 bg-[#008a00] z-50 hidden flex flex-col items-center justify-center text-white p-6 text-center animate-scale-in">
+      <div class="w-24 h-24 mb-6 relative flex items-center justify-center border-4 border-white rounded-full bg-emerald-700/30 shadow-2xl">
+        <i class="fa-solid fa-check text-5xl text-white"></i>
+      </div>
+
+      <h1 class="text-xl font-black tracking-wide uppercase mb-2">YOUR ORDER HAS BEEN PLACED SUCCESSFULLY!</h1>
+      <p class="text-xs text-emerald-100 mb-6 font-medium">Thank you for shopping with AMAZON LIGHT.</p>
+
+      <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 w-full max-w-xs space-y-2 text-left text-xs mb-8 border border-white/20">
+        <div class="flex justify-between">
+          <span class="opacity-80">Order ID:</span>
+          <span id="success-order-id" class="font-mono font-bold text-amber-300">#AML-8947291</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="opacity-80">Order Date:</span>
+          <span id="success-order-date" class="font-medium">Nov 9, 2026</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="opacity-80">Payment Method:</span>
+          <span class="font-semibold text-emerald-200">Prepaid Online</span>
+        </div>
+      </div>
+
+      <div class="w-full max-w-xs space-y-3">
+        <button onclick="viewOrderTrackingFromSuccess()" class="w-full bg-amber-400 hover:bg-amber-500 text-gray-900 font-extrabold py-3 rounded-full text-xs shadow-lg uppercase tracking-wider">
+          Track Your Order
+        </button>
+        <button onclick="closeSuccessAndGoHome()" class="w-full bg-white/20 hover:bg-white/30 text-white font-bold py-3 rounded-full text-xs backdrop-blur-sm border border-white/30">
+          Continue Shopping
+        </button>
+      </div>
+    </div>
+
+    <!-- Hidden Admin Password Modal -->
+    <div id="admin-login-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-white rounded-xl max-w-xs w-full p-5 space-y-4 shadow-2xl">
+        <div class="flex justify-between items-center border-b pb-2">
+          <h3 class="font-extrabold text-sm text-gray-900"><i class="fa-solid fa-lock text-amazon-orange mr-1.5"></i> Admin Access Login</h3>
+          <button onclick="closeAdminModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <p class="text-xs text-gray-600">Enter secure admin password to unlock management dashboard.</p>
+        <div>
+          <input type="password" id="admin-pass-input" placeholder="Admin Password" class="w-full px-3 py-2 border rounded-lg text-xs focus:ring-2 focus:ring-amazon-orange outline-none">
+        </div>
+        <button onclick="verifyAdminPassword()" class="w-full bg-amazon-orange text-white font-bold py-2 rounded-lg text-xs hover:bg-amazon-orangeDark">
+          Login to Dashboard
+        </button>
+      </div>
+    </div>
+
+    <!-- General Toast Notification -->
+    <div id="toast" class="fixed top-14 left-1/2 transform -translate-x-1/2 bg-gray-900/90 text-white text-xs px-4 py-2.5 rounded-full z-50 hidden transition-all duration-300 shadow-lg text-center max-w-xs">
+      Notification text
+    </div>
+
+  </div>
+
+  <script>
+    /* ==========================================================================
+       INITIAL DATA & STATE MANAGEMENT
+       ========================================================================== */
+
+    const DEFAULT_PRODUCTS = [
+      {
+        id: "prod-1",
+        title: "DJI Osmo Action 4 Standard Combo - Waterproof 4K Action Camera",
+        price: 22990,
+        mrp: 44990,
+        discount: 49,
+        rating: 4.8,
+        reviewsCount: 1240,
+        category: "Electronics",
+        inStock: true,
+        image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=500&q=80",
+        description: "1/1.3-inch sensor, stunning low-light imaging, 10-bit & D-Log M color performance, deep freeze resistant & long-lasting battery life."
+      },
+      {
+        id: "prod-2",
+        title: "WHOOP 5.0 / MG Screenless Fitness & Health Tracker Band",
+        price: 27539,
+        mrp: 28990,
+        discount: 5,
+        rating: 4.6,
+        reviewsCount: 890,
+        category: "Fitness",
+        inStock: true,
+        image: "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?auto=format&fit=crop&w=500&q=80",
+        description: "Continuous health & strain monitoring, sleep tracking, waterproof fabric band, long battery battery system."
+      },
+      {
+        id: "prod-3",
+        title: "T TOPLINE 5KG To 60KG Adjustable Heavy Hand Grip Strengthener",
+        price: 95,
+        mrp: 499,
+        discount: 81,
+        rating: 4.5,
+        reviewsCount: 1334,
+        category: "Fitness",
+        inStock: true,
+        image: "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&w=500&q=80",
+        description: "Non-slip mechanical counter hand exerciser grip. Ideal for forearm workouts, wrist rehabilitation & strength training."
+      },
+      {
+        id: "prod-4",
+        title: "SpinBot BattleBudz W20 Gaming Wired Earphones with Mic",
+        price: 299,
+        mrp: 799,
+        discount: 62,
+        rating: 4.3,
+        reviewsCount: 512,
+        category: "Electronics",
+        inStock: true,
+        image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=500&q=80",
+        description: "Immersive bass drivers, detachable boom microphone, zero latency audio performance for mobile gaming."
+      }
+    ];
+
+    const DEFAULT_REVIEWS = [
+      {
+        id: "rev-1",
+        productId: "prod-3",
+        author: "Amazon Editorial Review",
+        isStoreReview: true,
+        rating: 5,
+        title: "Excellent build quality for daily forearm workouts!",
+        comment: "Tested by Amazon Light team. The spring resistance is accurate from 5kg to 60kg without squeaking."
+      }
+    ];
+
+    const DEFAULT_QR_SETTINGS = {
+      qrUrl: "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=amazonlight@upi&pn=AmazonLightStore",
+      qrTimerSec: 120, // Visible customer countdown (Default 2 mins)
+      popupTimerSec: 15 // Background automatic popup timer (Default 15 secs)
+    };
+
+    // State Variables
+    let currentView = 'home';
+    let selectedProductId = null;
+    let logoTapCount = 0;
+    let logoTapTimer = null;
+    let qrCountdownInterval = null;
+    let popupCountdownInterval = null;
+    let currentActiveOrderId = null;
+    let adminActiveTab = 'qr';
+
+    // LocalStorage Initializations
+    function initData() {
+      if (!localStorage.getItem('aml_products')) {
+        localStorage.setItem('aml_products', JSON.stringify(DEFAULT_PRODUCTS));
+      }
+      if (!localStorage.getItem('aml_cart')) {
+        localStorage.setItem('aml_cart', JSON.stringify([{ productId: 'prod-3', qty: 1 }]));
+      }
+      if (!localStorage.getItem('aml_wishlist')) {
+        localStorage.setItem('aml_wishlist', JSON.stringify([]));
+      }
+      if (!localStorage.getItem('aml_addresses')) {
+        localStorage.setItem('aml_addresses', JSON.stringify([{
+          id: 'addr-1',
+          name: '',
+          mobile: '',
+          flat: '',
+          area: '',
+          landmark: '',
+          pincode: '',
+          city: '',
+          state: '',
+          isDefault: true
+        }]));
+      }
+      if (!localStorage.getItem('aml_orders')) {
+        localStorage.setItem('aml_orders', JSON.stringify([]));
+      }
+      if (!localStorage.getItem('aml_reviews')) {
+        localStorage.setItem('aml_reviews', JSON.stringify(DEFAULT_REVIEWS));
+      }
+      if (!localStorage.getItem('aml_qr_settings')) {
+        localStorage.setItem('aml_qr_settings', JSON.stringify(DEFAULT_QR_SETTINGS));
+      }
+      if (!localStorage.getItem('aml_wallet_balance')) {
+        localStorage.setItem('aml_wallet_balance', '150.00');
+      }
+    }
+
+    // Data Helpers
+    function getProducts() { return JSON.parse(localStorage.getItem('aml_products')) || []; }
+    function setProducts(p) { localStorage.setItem('aml_products', JSON.stringify(p)); }
+    function getCart() { return JSON.parse(localStorage.getItem('aml_cart')) || []; }
+    function setCart(c) { 
+      localStorage.setItem('aml_cart', JSON.stringify(c)); 
+      updateCartBadge();
+    }
+    function getWishlist() { return JSON.parse(localStorage.getItem('aml_wishlist')) || []; }
+    function setWishlist(w) { localStorage.setItem('aml_wishlist', JSON.stringify(w)); }
+    function getAddresses() { return JSON.parse(localStorage.getItem('aml_addresses')) || []; }
+    function getOrders() { return JSON.parse(localStorage.getItem('aml_orders')) || []; }
+    function setOrders(o) { localStorage.setItem('aml_orders', JSON.stringify(o)); }
+    function getQrSettings() { return JSON.parse(localStorage.getItem('aml_qr_settings')) || DEFAULT_QR_SETTINGS; }
+
+    function updateCartBadge() {
+      const cart = getCart();
+      const count = cart.reduce((sum, item) => sum + item.qty, 0);
+      const badge = document.getElementById('nav-cart-badge');
+      if (badge) badge.innerText = count;
+    }
+
+    /* ==========================================================================
+       ROUTING & NAVIGATION
+       ========================================================================== */
+
+    function navigateTo(view, param = null) {
+      currentView = view;
+      if (param) selectedProductId = param;
+      
+      // Reset Navigation Active Colors
+      ['home', 'you', 'wallet', 'cart', 'menu'].forEach(tab => {
+        const btn = document.getElementById(`nav-${tab}`);
+        if (btn) {
+          if (tab === view) {
+            btn.className = "flex flex-col items-center flex-1 py-1 text-amazon-orange font-bold";
+          } else {
+            btn.className = "flex flex-col items-center flex-1 py-1 text-gray-600 hover:text-gray-900";
+          }
+        }
+      });
+
+      // Clear Timers if Leaving Checkout Payment View
+      if (view !== 'payment') {
+        clearInterval(qrCountdownInterval);
+        clearInterval(popupCountdownInterval);
+      }
+
+      window.scrollTo(0, 0);
+
+      // View Router
+      switch(view) {
+        case 'home': renderHomeView(); break;
+        case 'product-details': renderProductDetailsView(selectedProductId); break;
+        case 'cart': renderCartView(); break;
+        case 'address': renderAddressView(); break;
+        case 'payment': renderPaymentView(); break;
+        case 'tracking': renderTrackingView(param); break;
+        case 'wallet': renderWalletView(); break;
+        case 'you': renderYouView(); break;
+        case 'menu': renderMenuView(); break;
+        case 'admin-dashboard': renderAdminDashboard(); break;
+        default: renderHomeView();
+      }
+    }
+
+    /* ==========================================================================
+       1. HOME PAGE VIEW (Pixel-Perfect Recreation of Screenshots 1, 2, 3)
+       ========================================================================== */
+
+    function renderHomeView() {
+      const products = getProducts();
+      
+      const html = `
+        <div class="pb-6">
+          
+          <!-- Quick Category Scroll Pills (Screenshot 2 Top) -->
+          <div class="bg-white py-2 px-2 border-b border-gray-200 flex space-x-2 overflow-x-auto no-scrollbar text-xs">
+            <div class="flex-none bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-full font-bold text-gray-800 flex items-center space-x-1">
+              <span class="w-2 h-2 bg-amazon-orange rounded-full"></span>
+              <span>Shop All</span>
+            </div>
+            <div class="flex-none bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-full text-gray-700">Mobiles</div>
+            <div class="flex-none bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-full text-gray-700">Fashion & Beauty</div>
+            <div class="flex-none bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-full text-gray-700">Home & Living</div>
+            <div class="flex-none bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-full text-gray-700">Electronics</div>
+            <div class="flex-none bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-full text-gray-700">Fitness</div>
+          </div>
+
+          <!-- Promotional Hero Banner (Screenshot 2) -->
+          <div class="p-2">
+            <div class="bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl p-4 text-white relative overflow-hidden shadow-sm">
+              <span class="bg-yellow-400 text-gray-900 font-extrabold text-[10px] px-2 py-0.5 rounded uppercase tracking-wider">Fast Festive Days</span>
+              <h2 class="text-xl font-black mt-1">Great Indian Festival</h2>
+              <p class="text-xs text-amber-100 font-medium mt-0.5">10% Instant Discount on HDFC & Axis Cards*</p>
+              <div class="mt-3 inline-block bg-white text-gray-900 text-xs font-bold px-3 py-1.5 rounded-lg shadow">
+                Explore Deals <i class="fa-solid fa-arrow-right text-[10px] ml-1"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trending Deals Section (Screenshot 1 Visual Layout) -->
+          <div class="bg-amber-300/40 p-3 my-2 border-y border-amber-300/50">
+            <div class="flex justify-between items-center mb-2">
+              <h3 class="font-black text-sm text-gray-900 tracking-tight">Trending deals</h3>
+              <i class="fa-solid fa-chevron-right text-xs text-gray-700"></i>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="grid grid-cols-2 gap-2.5">
+              ${products.map(p => `
+                <div onclick="navigateTo('product-details', '${p.id}')" class="bg-white p-2.5 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between cursor-pointer hover:shadow-md transition">
+                  <div>
+                    <div class="w-full h-36 bg-gray-100 rounded-lg overflow-hidden mb-2 relative">
+                      <img src="${p.image}" class="w-full h-full object-contain p-1" alt="${p.title}" onerror="this.src='https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=500&q=80'">
+                      <button onclick="event.stopPropagation(); toggleWishlist('${p.id}')" class="absolute top-1.5 right-1.5 bg-white/80 p-1.5 rounded-full text-gray-600 hover:text-rose-600">
+                        <i class="${getWishlist().includes(p.id) ? 'fa-solid fa-heart text-rose-600' : 'fa-regular fa-heart'} text-xs"></i>
+                      </button>
+                    </div>
+
+                    <h4 class="text-xs text-gray-800 font-medium line-clamp-2 leading-snug mb-1">${p.title}</h4>
+                  </div>
+
+                  <div>
+                    <div class="flex items-baseline space-x-1.5">
+                      <span class="text-sm font-black text-gray-900">₹${p.price.toLocaleString()}</span>
+                      <span class="text-[10px] text-gray-500 line-through">M.R.P: ₹${p.mrp.toLocaleString()}</span>
+                    </div>
+
+                    <div class="mt-1 flex items-center justify-between">
+                      <span class="bg-rose-700 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded">${p.discount}% off</span>
+                      <span class="text-[10px] text-rose-700 font-bold">Ends in 01:00:53</span>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- Budget Friendly Sports & Fitness Section (Screenshot 3 Visual Layout) -->
+          <div class="bg-white p-3 border-b border-gray-200">
+            <h3 class="font-black text-sm text-gray-900 mb-2">Budget friendly sports & fitness finds</h3>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="bg-gray-50 p-2 rounded-lg border border-gray-200 text-center">
+                <img src="https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&w=300&q=80" class="h-24 mx-auto object-contain rounded">
+                <p class="text-[11px] font-bold text-gray-800 mt-1">Under ₹499 | Fitness</p>
+              </div>
+              <div class="bg-gray-50 p-2 rounded-lg border border-gray-200 text-center">
+                <img src="https://images.unsplash.com/photo-1517649763962-0c623266010b?auto=format&fit=crop&w=300&q=80" class="h-24 mx-auto object-contain rounded">
+                <p class="text-[11px] font-bold text-gray-800 mt-1">Under ₹999 | Gear</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      `;
+      document.getElementById('main-content').innerHTML = html;
+    }
+
+    /* ==========================================================================
+       2. PRODUCT DETAILS VIEW (Screenshot 5 Match)
+       ========================================================================== */
+
+    function renderProductDetailsView(id) {
+      const products = getProducts();
+      const p = products.find(item => item.id === id) || products[0];
+      const reviews = (JSON.parse(localStorage.getItem('aml_reviews')) || []).filter(r => r.productId === p.id);
+
+      const html = `
+        <div class="bg-white pb-10">
+          <!-- Gallery / Main Image -->
+          <div class="w-full h-72 bg-gray-50 p-4 relative border-b border-gray-200">
+            <img src="${p.image}" class="w-full h-full object-contain mx-auto" alt="${p.title}">
+            <div class="absolute bottom-3 right-3 flex space-x-2">
+              <button onclick="toggleWishlist('${p.id}')" class="bg-white border p-2 rounded-full shadow text-gray-600">
+                <i class="${getWishlist().includes(p.id) ? 'fa-solid fa-heart text-rose-600' : 'fa-regular fa-heart'} text-sm"></i>
+              </button>
+              <button onclick="showToast('Link copied to clipboard')" class="bg-white border p-2 rounded-full shadow text-gray-600">
+                <i class="fa-solid fa-share-nodes text-sm"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="p-4 space-y-3">
+            <!-- Title & Rating -->
+            <h1 class="text-sm font-semibold text-gray-900 leading-snug">${p.title}</h1>
+            <div class="flex items-center space-x-2 text-xs">
+              <span class="text-amber-500 font-bold">${p.rating} <i class="fa-solid fa-star"></i></span>
+              <span class="text-amazon-blue">(${p.reviewsCount} ratings)</span>
+            </div>
+
+            <!-- Price Breakdown -->
+            <div class="border-t border-b border-gray-100 py-3">
+              <div class="flex items-baseline space-x-2">
+                <span class="text-rose-700 font-extrabold text-xl">-${p.discount}%</span>
+                <span class="text-2xl font-black text-gray-900">₹${p.price.toLocaleString()}</span>
+              </div>
+              <p class="text-xs text-gray-500">M.R.P.: <span class="line-through">₹${p.mrp.toLocaleString()}</span></p>
+              <p class="text-[11px] text-gray-600 mt-1 font-medium">Inclusive of all taxes</p>
+            </div>
+
+            <!-- Delivery Details (Screenshot 5) -->
+            <div class="text-xs space-y-1">
+              <p class="font-bold text-gray-900">₹69 delivery <span class="font-extrabold">Monday, 23 November</span>. Order within <span class="text-emerald-700 font-bold">10 hrs</span>.</p>
+              <p class="text-amazon-blue flex items-center cursor-pointer">
+                <i class="fa-solid fa-location-dot text-gray-600 mr-1"></i> Delivering to Jammu 180002 - Update location
+              </p>
+            </div>
+
+            <!-- Stock Status -->
+            <div class="text-xs font-bold text-emerald-700">In stock</div>
+
+            <!-- CTA Buttons -->
+            <div class="space-y-2.5 pt-2">
+              <button onclick="addToCart('${p.id}', true)" class="w-full bg-amazon-yellow hover:bg-amazon-yellowHover text-gray-900 font-bold py-3 rounded-full text-xs shadow">
+                Add to Cart
+              </button>
+              <button onclick="buyNow('${p.id}')" class="w-full bg-amazon-orange hover:bg-amazon-orangeDark text-white font-bold py-3 rounded-full text-xs shadow">
+                Buy Now
+              </button>
+            </div>
+
+            <!-- Customer & Store Reviews Section -->
+            <div class="border-t border-gray-200 pt-4 mt-6">
+              <h3 class="font-bold text-sm text-gray-900 mb-3">Customer & Editorial Reviews</h3>
+              <div class="space-y-3">
+                ${reviews.length === 0 ? '<p class="text-xs text-gray-500 italic">No reviews yet for this product.</p>' : ''}
+                ${reviews.map(r => `
+                  <div class="bg-gray-50 p-3 rounded-lg border border-gray-200 text-xs">
+                    <div class="flex items-center justify-between mb-1">
+                      <span class="font-bold text-gray-800">${r.author} ${r.isStoreReview ? '<span class="bg-amber-200 text-amber-900 text-[9px] px-1.5 py-0.5 rounded font-extrabold ml-1">Editorial Review</span>' : ''}</span>
+                      <div class="text-amber-500">
+                        ${Array(r.rating).fill('<i class="fa-solid fa-star"></i>').join('')}
+                      </div>
+                    </div>
+                    <p class="font-semibold text-gray-900">${r.title}</p>
+                    <p class="text-gray-600 mt-1">${r.comment}</p>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      `;
+      document.getElementById('main-content').innerHTML = html;
+    }
+
+    /* ==========================================================================
+       3. SHOPPING CART VIEW
+       ========================================================================== */
+
+    function renderCartView() {
+      const cart = getCart();
+      const products = getProducts();
+
+      let subtotal = 0;
+      const cartItems = cart.map(item => {
+        const p = products.find(x => x.id === item.productId);
+        if (p) subtotal += p.price * item.qty;
+        return { ...item, product: p };
+      }).filter(x => x.product);
+
+      const html = `
+        <div class="bg-white min-h-full p-4 pb-12 space-y-4">
+          <h2 class="text-base font-black text-gray-900 border-b pb-2">Shopping Cart</h2>
+
+          ${cartItems.length === 0 ? `
+            <div class="text-center py-12 space-y-3">
+              <i class="fa-solid fa-cart-arrow-down text-4xl text-gray-300"></i>
+              <p class="text-xs font-bold text-gray-600">Your Amazon Light Cart is empty</p>
+              <button onclick="navigateTo('home')" class="bg-amazon-yellow text-xs font-bold px-4 py-2 rounded-full">Continue Shopping</button>
+            </div>
+          ` : `
+            <div class="space-y-3">
+              ${cartItems.map(item => `
+                <div class="flex space-x-3 border-b pb-3">
+                  <img src="${item.product.image}" class="w-20 h-20 object-contain rounded bg-gray-50 border p-1" alt="${item.product.title}">
+                  <div class="flex-1 space-y-1 text-xs">
+                    <p class="font-medium text-gray-900 line-clamp-2">${item.product.title}</p>
+                    <p class="font-black text-sm text-gray-900">₹${item.product.price.toLocaleString()}</p>
+                    <div class="flex items-center space-x-3 pt-1">
+                      <div class="flex items-center border rounded bg-gray-100">
+                        <button onclick="updateCartQty('${item.productId}', -1)" class="px-2.5 py-1 text-gray-700 font-bold">-</button>
+                        <span class="px-2 py-1 font-bold bg-white text-gray-900">${item.qty}</span>
+                        <button onclick="updateCartQty('${item.productId}', 1)" class="px-2.5 py-1 text-gray-700 font-bold">+</button>
+                      </div>
+                      <button onclick="removeFromCart('${item.productId}')" class="text-rose-600 text-xs font-semibold">Delete</button>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+
+              <div class="pt-2 text-right">
+                <p class="text-xs text-gray-600">Subtotal (${cartItems.reduce((a,b)=>a+b.qty,0)} items): <span class="text-base font-black text-gray-900">₹${subtotal.toLocaleString()}</span></p>
+              </div>
+
+              <button onclick="navigateTo('address')" class="w-full bg-amazon-yellow hover:bg-amazon-yellowHover text-gray-900 font-extrabold py-3 rounded-full text-xs shadow-md uppercase tracking-wider">
+                Proceed to Checkout
+              </button>
+            </div>
+          `}
+        </div>
+      `;
+      document.getElementById('main-content').innerHTML = html;
+    }
+
+    /* ==========================================================================
+       4. ADDRESS ENTRY SCREEN (Blank Form Inputs)
+       ========================================================================== */
+
+    function renderAddressView() {
+      const addresses = getAddresses();
+      const addr = addresses[0] || {};
+
+      const html = `
+        <div class="bg-white min-h-full p-4 pb-12 space-y-4">
+          <!-- Step Indicator Header -->
+          <div class="border-b pb-3 flex items-center justify-between text-xs font-semibold text-gray-500">
+            <span class="text-amazon-orange font-bold"><i class="fa-solid fa-circle-dot mr-1"></i> Address</span>
+            <span>Payment</span>
+            <span>Confirm</span>
+          </div>
+
+          <h3 class="font-black text-sm text-gray-900">Enter a new delivery address</h3>
+
+          <form onsubmit="handleAddressSubmit(event)" class="space-y-3 text-xs">
+            <div>
+              <label class="block font-bold text-gray-700 mb-1">Country/Region</label>
+              <select class="w-full border p-2.5 rounded-lg bg-gray-50 font-medium">
+                <option>India</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-bold text-gray-700 mb-1">Full name (First and Last name)</label>
+              <input type="text" id="addr-name" value="${addr.name || ''}" placeholder="Full name" required class="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-amazon-orange outline-none">
+            </div>
+
+            <div>
+              <label class="block font-bold text-gray-700 mb-1">Mobile number</label>
+              <input type="tel" id="addr-mobile" value="${addr.mobile || ''}" placeholder="Mobile number" required class="w-full border p-2.5 rounded-lg focus:ring-2 focus:ring-amazon-orange outline-none">
+            </div>
+
+            <div>
+              <label class="block font-bold text-gray-700 mb-1">Flat, House no., Building, Apartment</label>
+              <input type="text" id="addr-flat" value="${addr.flat || ''}" placeholder="Flat, House no., Building" required class="w-full border p-2.5 rounded-lg outline-none">
+            </div>
+
+            <div>
+              <label class="block font-bold text-gray-700 mb-1">Area, Street, Sector, Village</label>
+              <input type="text" id="addr-area" value="${addr.area || ''}" placeholder="Area, Street, Sector" required class="w-full border p-2.5 rounded-lg outline-none">
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block font-bold text-gray-700 mb-1">Pincode</label>
+                <input type="text" id="addr-pincode" value="${addr.pincode || ''}" placeholder="6-digit Pincode" required class="w-full border p-2.5 rounded-lg outline-none">
+              </div>
+              <div>
+                <label class="block font-bold text-gray-700 mb-1">Town/City</label>
+                <input type="text" id="addr-city" value="${addr.city || ''}" placeholder="Town/City" required class="w-full border p-2.5 rounded-lg outline-none">
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-bold text-gray-700 mb-1">State</label>
+              <input type="text" id="addr-state" value="${addr.state || ''}" placeholder="State" required class="w-full border p-2.5 rounded-lg outline-none">
+            </div>
+
+            <button type="submit" class="w-full bg-amazon-yellow hover:bg-amazon-yellowHover text-gray-900 font-extrabold py-3 rounded-full text-xs shadow-md uppercase tracking-wider mt-4">
+              Use this address
+            </button>
+          </form>
+        </div>
+      `;
+      document.getElementById('main-content').innerHTML = html;
+    }
+
+    /* ==========================================================================
+       5. PAYMENT METHOD & ADMIN QR / TIMERS SCREEN (Exact Screenshot 4 + All User Fixes)
+       ========================================================================== */
+
+    function renderPaymentView() {
+      const qrSettings = getQrSettings();
+      const cart = getCart();
+      const products = getProducts();
+      
+      const subtotal = cart.reduce((sum, item) => {
+        const p = products.find(x => x.id === item.productId);
+        return sum + (p ? p.price * item.qty : 0);
+      }, 0);
+
+      const html = `
+        <div class="bg-gray-100 min-h-full pb-12">
+          
+          <!-- Top Header Navigation Progress -->
+          <div class="bg-white border-b border-gray-200 py-3 px-4 flex items-center justify-between text-xs font-semibold text-gray-500">
+            <div class="flex items-center space-x-1 text-emerald-600">
+              <i class="fa-solid fa-circle-check"></i>
+              <span>Address</span>
+            </div>
+            <div class="flex items-center space-x-1 text-amazon-orange">
+              <span class="w-5 h-5 rounded-full bg-amazon-orange text-white flex items-center justify-center text-[10px]">2</span>
+              <span class="font-bold">Payment</span>
+            </div>
+            <div class="flex items-center space-x-1">
+              <span class="w-5 h-5 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center text-[10px]">3</span>
+              <span>Confirm</span>
+            </div>
+          </div>
+
+          <!-- Main Options Section (Hidden when QR View opens) -->
+          <div id="payment-options-wrapper">
+            <!-- Amazon Pay UPI Offer Banner -->
+            <div class="m-3 bg-amber-100 border border-amber-300 rounded-xl p-3 flex items-center space-x-3 shadow-sm">
+              <div class="w-12 h-12 bg-yellow-400 rounded-lg flex items-center justify-center font-black text-gray-900 text-sm shadow shrink-0">
+                Pay
+              </div>
+              <div class="text-xs">
+                <p class="text-gray-900 font-bold">Pay <span class="line-through text-gray-500">₹${subtotal + 25}</span> <span class="text-rose-700 font-extrabold">₹${subtotal}</span> for this order with Amazon Pay UPI.</p>
+                <span class="text-amazon-blue font-bold">Setup now</span>
+              </div>
+            </div>
+
+            <!-- RECOMMENDED PAYMENT SECTION -->
+            <div class="px-3 py-1 space-y-2">
+              <h4 class="text-xs font-extrabold text-gray-600 uppercase">RECOMMENDED METHOD</h4>
+              
+              <!-- Prepaid Instant Scan & Pay (UPI / QR) Option -->
+              <div onclick="selectPaymentOption('qr')" id="container-opt-qr" class="bg-white rounded-xl border border-gray-200 p-3.5 shadow-sm space-y-3 cursor-pointer transition-all">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-2.5">
+                    <input type="radio" name="payment_opt" id="opt-qr" class="w-4 h-4 text-amazon-orange cursor-pointer">
+                    <label for="opt-qr" class="font-bold text-sm text-gray-900 cursor-pointer">Prepaid Instant Scan & Pay (UPI / QR)</label>
+                  </div>
+                  <span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded">Fastest</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- MORE PAYMENT METHODS -->
+            <div class="px-3 py-2 space-y-2">
+              <h4 class="text-xs font-extrabold text-gray-600 uppercase">MORE WAYS TO PAY</h4>
+
+              <!-- Credit / Debit Cards -->
+              <div onclick="selectPaymentOption('card')" id="container-opt-card" class="bg-white rounded-xl p-3 border border-gray-200 flex items-center justify-between text-xs font-semibold text-gray-800 cursor-pointer">
+                <div class="flex items-center space-x-2">
+                  <i class="fa-regular fa-credit-card text-base text-gray-500"></i>
+                  <span>Credit or Debit Card</span>
+                </div>
+                <input type="radio" name="payment_opt" id="opt-card" class="w-4 h-4">
+              </div>
+
+              <!-- Net Banking -->
+              <div onclick="selectPaymentOption('netbanking')" id="container-opt-netbanking" class="bg-white rounded-xl p-3 border border-gray-200 flex items-center justify-between text-xs font-semibold text-gray-800 cursor-pointer">
+                <div class="flex items-center space-x-2">
+                  <i class="fa-solid fa-building-columns text-base text-gray-500"></i>
+                  <span>Net Banking</span>
+                </div>
+                <input type="radio" name="payment_opt" id="opt-netbanking" class="w-4 h-4">
+              </div>
+
+              <!-- CASH ON DELIVERY OPTION WITH RED ALERT WARNING -->
+              <div onclick="selectPaymentOption('cod')" id="container-opt-cod" class="bg-white rounded-xl p-3 border border-rose-200 shadow-sm space-y-2 cursor-pointer transition-all">
+                <div class="flex items-center justify-between text-xs font-semibold">
+                  <div class="flex items-center space-x-2 text-gray-500">
+                    <i class="fa-solid fa-money-bill-transfer text-base"></i>
+                    <div>
+                      <p class="text-gray-700">Cash on Delivery / Pay on Delivery</p>
+                      <p class="text-[10px] text-gray-400 font-normal">Cash, UPI & Cards accepted on delivery</p>
+                    </div>
+                  </div>
+                  <input type="radio" name="payment_opt" id="opt-cod" disabled class="w-4 h-4">
+                </div>
+
+                <!-- RED WARNING ALERT TEXT -->
+                <div id="cod-red-warning" class="bg-rose-50 border border-rose-300 rounded-lg p-2.5 flex items-start space-x-2 text-rose-700 text-xs font-semibold">
+                  <i class="fa-solid fa-circle-exclamation text-rose-600 text-sm mt-0.5 shrink-0"></i>
+                  <span>Cash on Delivery is unavailable for this delivery address. Please choose Prepaid Payment to continue.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Checkout Button -->
+            <div class="p-3">
+              <button onclick="handlePaymentProceed()" class="w-full bg-amazon-yellow hover:bg-amazon-yellowHover text-gray-900 font-bold py-3 rounded-full text-sm border border-yellow-500 shadow-md transition">
+                Complete Payment & Place Order
+              </button>
+            </div>
+          </div>
+
+          <!-- CLEAN DEDICATED QR CODE PAYMENT SCREEN (Only shown after clicking Complete Payment) -->
+          <div id="admin-qr-container" class="hidden p-4 text-center space-y-4 animate-fade-in my-6">
+            <div class="bg-white rounded-2xl p-6 border-2 border-amber-400 shadow-xl space-y-4 max-w-sm mx-auto">
+              <div class="flex items-center justify-center space-x-2 text-sm font-extrabold text-gray-900 border-b pb-3">
+                <i class="fa-solid fa-qrcode text-amazon-orange text-lg"></i>
+                <span>Scan QR Code to Pay</span>
+              </div>
+              
+              <p class="text-xs text-gray-600 font-medium">Open Google Pay, PhonePe, Paytm or any UPI app to scan and complete payment</p>
+              
+              <div class="relative w-56 h-56 mx-auto bg-white p-3 rounded-xl border-2 border-amber-300 shadow-inner">
+                <img id="display-qr-img" src="${qrSettings.qrUrl}" class="w-full h-full object-contain" alt="Payment QR Code" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=AMAZONLIGHT_PAY'">
+                <div id="qr-expired-overlay" class="hidden absolute inset-0 bg-gray-900/90 text-white flex flex-col items-center justify-center rounded-xl p-2">
+                  <i class="fa-solid fa-clock-rotate-left text-3xl mb-2 text-amber-400"></i>
+                  <span class="text-xs font-bold">QR Session Expired</span>
+                  <button onclick="startCheckoutTimers()" class="mt-2 text-xs bg-amber-400 text-gray-900 font-bold px-3 py-1.5 rounded-full">Refresh QR</button>
+                </div>
+              </div>
+
+              <!-- LIVE COUNTDOWN TIMER -->
+              <div class="text-xs text-gray-700 font-semibold pt-2 border-t">
+                <span>QR Code expires in: </span>
+                <span id="qr-display-timer-text" class="font-mono font-extrabold text-rose-700 bg-rose-100 px-2.5 py-1 rounded-md text-sm">02:00</span>
+              </div>
+            </div>
+
+            <button onclick="navigateTo('payment')" class="text-xs text-gray-500 underline font-medium">Choose a different payment method</button>
+          </div>
+
+        </div>
+      `;
+      document.getElementById('main-content').innerHTML = html;
+    }
+
+    let selectedPaymentMethod = null;
+
+    function selectPaymentOption(option) {
+      selectedPaymentMethod = option;
+
+      // Update Radio Selections
+      document.getElementById('opt-qr').checked = (option === 'qr');
+      document.getElementById('opt-card').checked = (option === 'card');
+      document.getElementById('opt-netbanking').checked = (option === 'netbanking');
+      document.getElementById('opt-cod').checked = false;
+
+      // Highlight Selected Card Borders
+      document.getElementById('container-opt-qr').className = option === 'qr' ? "bg-white rounded-xl border-2 border-amazon-orange p-3.5 shadow-md space-y-3 cursor-pointer transition-all" : "bg-white rounded-xl border border-gray-200 p-3.5 shadow-sm space-y-3 cursor-pointer transition-all";
+      document.getElementById('container-opt-card').className = option === 'card' ? "bg-white rounded-xl p-3 border-2 border-amazon-orange flex items-center justify-between text-xs font-semibold text-gray-800 cursor-pointer" : "bg-white rounded-xl p-3 border border-gray-200 flex items-center justify-between text-xs font-semibold text-gray-800 cursor-pointer";
+      document.getElementById('container-opt-netbanking').className = option === 'netbanking' ? "bg-white rounded-xl p-3 border-2 border-amazon-orange flex items-center justify-between text-xs font-semibold text-gray-800 cursor-pointer" : "bg-white rounded-xl p-3 border border-gray-200 flex items-center justify-between text-xs font-semibold text-gray-800 cursor-pointer";
+
+      // COD Warning Response
+      if (option === 'cod') {
+        triggerCodUnavailableAlert();
+      }
+    }
+
+    function handlePaymentProceed() {
+      if (!selectedPaymentMethod) {
+        showToast("Please select a payment method", true);
+        return;
+      }
+      if (selectedPaymentMethod === 'cod') {
+        triggerCodUnavailableAlert();
+        return;
+      }
+
+      // Hide all options & show ONLY the dedicated QR payment view
+      if (selectedPaymentMethod === 'qr') {
+        document.getElementById('payment-options-wrapper').classList.add('hidden');
+        const qrBox = document.getElementById('admin-qr-container');
+        qrBox.classList.remove('hidden');
+        window.scrollTo(0, 0);
+        startCheckoutTimers();
+      } else {
+        triggerImmediateOrderSuccess();
+      }
+    }
+
+    function triggerCodUnavailableAlert() {
+      alert("Cash on Delivery is unavailable for this delivery address. Please choose Prepaid Payment to continue.");
+    }
+
+    /* Independent QR & Background Timers Logic */
+    function startCheckoutTimers() {
+      const qrSettings = getQrSettings();
+      let qrSecondsRemaining = parseInt(qrSettings.qrTimerSec) || 120;
+      let popupSecondsRemaining = parseInt(qrSettings.popupTimerSec) || 15;
+
+      clearInterval(qrCountdownInterval);
+      clearInterval(popupCountdownInterval);
+
+      // Timer A: Customer-Visible QR Countdown Timer
+      qrCountdownInterval = setInterval(() => {
+        qrSecondsRemaining--;
+        const m = Math.floor(qrSecondsRemaining / 60).toString().padStart(2, '0');
+        const s = (qrSecondsRemaining % 60).toString().padStart(2, '0');
+        const el = document.getElementById('qr-display-timer-text');
+        if (el) el.innerText = `${m}:${s}`;
+
+        if (qrSecondsRemaining <= 0) {
+          clearInterval(qrCountdownInterval);
+          const overlay = document.getElementById('qr-expired-overlay');
+          if (overlay) overlay.classList.remove('hidden');
+        }
+      }, 1000);
+
+      // Timer B: Customer-HIDDEN Auto Order Popup Timer (Runs silently in background)
+      popupCountdownInterval = setInterval(() => {
+        popupSecondsRemaining--;
+        if (popupSecondsRemaining <= 0) {
+          clearInterval(popupCountdownInterval);
+          triggerFullGreenOrderSuccessAnimation();
+        }
+      }, 1000);
+    }
+
+    function triggerImmediateOrderSuccess() {
+      clearInterval(qrCountdownInterval);
+      clearInterval(popupCountdownInterval);
+      triggerFullGreenOrderSuccessAnimation();
+    }
+
+    /* ==========================================================================
+       6. FULL-SCREEN GREEN ORDER SUCCESS ANIMATION & ORDER CREATION
+       ========================================================================== */
+
+    function triggerFullGreenOrderSuccessAnimation() {
+      // Create Permanent Order Record
+      const cart = getCart();
+      const products = getProducts();
+      const addresses = getAddresses();
+      
+      const subtotal = cart.reduce((sum, item) => {
+        const p = products.find(x => x.id === item.productId);
+        return sum + (p ? p.price * item.qty : 0);
+      }, 0);
+
+      const newOrderId = 'AML-' + Math.floor(100000 + Math.random() * 900000);
+      currentActiveOrderId = newOrderId;
+
+      const newOrder = {
+        id: newOrderId,
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        items: cart,
+        total: subtotal,
+        address: addresses[0] || {},
+        status: 'Order Placed',
+        paymentStatus: 'Prepaid (QR Scan)',
+        trackingHistory: [
+          { status: 'Order Placed', date: new Date().toLocaleString(), location: 'Jammu Hub' }
+        ]
+      };
+
+      const orders = getOrders();
+      orders.unshift(newOrder);
+      setOrders(orders);
+
+      // Clear Cart
+      setCart([]);
+
+      // Fill Overlay Details
+      document.getElementById('success-order-id').innerText = `#${newOrderId}`;
+      document.getElementById('success-order-date').innerText = newOrder.date;
+
+      // Unhide Green Screen
+      document.getElementById('full-green-success-screen').classList.remove('hidden');
+    }
+
+    function viewOrderTrackingFromSuccess() {
+      document.getElementById('full-green-success-screen').classList.add('hidden');
+      navigateTo('tracking', currentActiveOrderId);
+    }
+
+    function closeSuccessAndGoHome() {
+      document.getElementById('full-green-success-screen').classList.add('hidden');
+      navigateTo('home');
+    }
+
+    /* ==========================================================================
+       7. ORDER TRACKING VIEW (Screenshot 4 Order Details Match)
+       ========================================================================== */
+
+    function renderTrackingView(orderId) {
+      const orders = getOrders();
+      const order = orders.find(o => o.id === orderId) || orders[0];
+
+      if (!order) {
+        document.getElementById('main-content').innerHTML = `
+          <div class="p-6 text-center text-xs font-bold text-gray-600">
+            No active orders found to track. <br>
+            <button onclick="navigateTo('home')" class="mt-3 bg-amazon-yellow px-4 py-2 rounded-full">Shop Now</button>
+          </div>
+        `;
+        return;
+      }
+
+      const products = getProducts();
+      const stages = ['Order Placed', 'Processing', 'Packed', 'Shipped', 'Out for Delivery', 'Delivered'];
+      const currentStageIndex = stages.indexOf(order.status) >= 0 ? stages.indexOf(order.status) : 0;
+
+      const html = `
+        <div class="bg-white min-h-full p-4 pb-12 space-y-4 text-xs">
+          <div class="flex justify-between items-center border-b pb-2">
+            <h2 class="text-sm font-black text-gray-900">Order Details & Tracking</h2>
+            <span class="font-mono text-gray-500 font-bold">#${order.id}</span>
+          </div>
+
+          <!-- Live Tracking Timeline Bar -->
+          <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
+            <h4 class="font-extrabold text-gray-800">Delivery Status: <span class="text-amazon-orange">${order.status}</span></h4>
+            
+            <div class="space-y-2 pt-1">
+              ${stages.map((stage, idx) => {
+                const isCompleted = idx <= currentStageIndex;
+                return `
+                  <div class="flex items-center space-x-3">
+                    <div class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${isCompleted ? 'bg-emerald-600 text-white' : 'bg-gray-200 text-gray-500'}">
+                      ${isCompleted ? '<i class="fa-solid fa-check"></i>' : idx + 1}
+                    </div>
+                    <span class="${isCompleted ? 'font-bold text-gray-900' : 'text-gray-400'}">${stage}</span>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <!-- Ordered Items Summary -->
+          <div class="space-y-2 border-t pt-3">
+            <h4 class="font-bold text-gray-800">Items Ordered</h4>
+            ${order.items.map(item => {
+              const p = products.find(x => x.id === item.productId);
+              return p ? `
+                <div class="flex space-x-3 border-b pb-2">
+                  <img src="${p.image}" class="w-14 h-14 object-contain border rounded">
+                  <div class="flex-1">
+                    <p class="font-semibold text-gray-900 line-clamp-1">${p.title}</p>
+                    <p class="text-gray-500">Qty: ${item.qty} | Price: ₹${p.price}</p>
+                  </div>
+                </div>
+              ` : '';
+            }).join('')}
+          </div>
+
+          <!-- Address Summary -->
+          <div class="bg-amber-50 p-3 rounded-lg border border-amber-200">
+            <p class="font-bold text-gray-800">Shipping Address:</p>
+            <p class="text-gray-700">${order.address.name || 'Khalid Najar'}</p>
+            <p class="text-gray-600">${order.address.flat || ''}, ${order.address.area || ''}, ${order.address.city || 'Jammu'}</p>
+          </div>
+
+        </div>
+      `;
+      document.getElementById('main-content').innerHTML = html;
+    }
+
+    /* ==========================================================================
+       8. WALLET VIEW
+       ========================================================================== */
+
+    function renderWalletView() {
+      const balance = localStorage.getItem('aml_wallet_balance') || '150.00';
+
+      const html = `
+        <div class="bg-white min-h-full p-4 pb-12 space-y-4">
+          <div class="bg-gradient-to-r from-gray-900 to-gray-800 rounded-xl p-5 text-white shadow-lg space-y-2">
+            <p class="text-xs text-amber-400 font-bold uppercase tracking-wider">Amazon Light Pay Balance</p>
+            <h2 class="text-3xl font-black">₹${balance}</h2>
+            <p class="text-[10px] text-gray-400">Available for instant checkout & refunds</p>
+          </div>
+
+          <div class="space-y-2 border-t pt-3">
+            <h3 class="font-extrabold text-xs text-gray-800 uppercase">Recent Wallet Activity</h3>
+            <div class="space-y-2 text-xs">
+              <div class="flex justify-between items-center border-b pb-2">
+                <div>
+                  <p class="font-bold text-gray-900">Welcome Cashback Bonus</p>
+                  <p class="text-[10px] text-gray-400">Nov 9, 2026</p>
+                </div>
+                <span class="font-extrabold text-emerald-600">+₹150.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.getElementById('main-content').innerHTML = html;
+    }
+
+    /* ==========================================================================
+       9. YOU (USER PROFILE) VIEW
+       ========================================================================== */
+
+    function renderYouView() {
+      const orders = getOrders();
+
+      const html = `
+        <div class="bg-white min-h-full p-4 pb-12 space-y-4 text-xs">
+          <div class="flex items-center space-x-3 border-b pb-4">
+            <div class="w-12 h-12 bg-amber-400 rounded-full flex items-center justify-center font-black text-lg text-gray-900 shadow">
+              K
+            </div>
+            <div>
+              <h2 class="font-black text-sm text-gray-900">Khalid Najar</h2>
+              <p class="text-gray-500 text-[11px]">7051633991</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="navigateTo('cart')" class="border p-3 rounded-xl font-bold text-gray-800 text-center bg-gray-50 hover:bg-gray-100">
+              <i class="fa-solid fa-box text-amazon-orange mb-1 text-base block"></i> Your Orders (${orders.length})
+            </button>
+            <button onclick="navigateTo('wallet')" class="border p-3 rounded-xl font-bold text-gray-800 text-center bg-gray-50 hover:bg-gray-100">
+              <i class="fa-solid fa-wallet text-amazon-orange mb-1 text-base block"></i> Your Wallet
+            </button>
+          </div>
+        </div>
+      `;
+      document.getElementById('main-content').innerHTML = html;
+    }
+
+    function renderMenuView() {
+      const html = `
+        <div class="bg-gray-100 min-h-full p-3 pb-12 space-y-3 text-xs">
+          <div class="bg-white rounded-xl p-3 shadow-sm font-bold text-gray-800 space-y-3">
+            <div onclick="navigateTo('home')" class="flex justify-between items-center border-b pb-2 cursor-pointer">
+              <span>Home & Deals</span>
+              <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
+            </div>
+            <div onclick="navigateTo('address')" class="flex justify-between items-center border-b pb-2 cursor-pointer">
+              <span>Saved Delivery Addresses</span>
+              <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
+            </div>
+            <div onclick="navigateTo('wallet')" class="flex justify-between items-center border-b pb-2 cursor-pointer">
+              <span>Amazon Light Pay Balance</span>
+              <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
+            </div>
+          </div>
+        </div>
+      `;
+      document.getElementById('main-content').innerHTML = html;
+    }
+
+    /* ==========================================================================
+       10. HIDDEN ADMIN PANEL & DASHBOARD (4 Taps Trigger on Logo)
+       ========================================================================== */
+
+    function handleLogoTap() {
+      logoTapCount++;
+      clearTimeout(logoTapTimer);
+      
+      if (logoTapCount >= 4) {
+        logoTapCount = 0;
+        document.getElementById('admin-login-modal').classList.remove('hidden');
+      } else {
+        logoTapTimer = setTimeout(() => { logoTapCount = 0; }, 1200);
+      }
+    }
+
+    function closeAdminModal() {
+      document.getElementById('admin-login-modal').classList.add('hidden');
+    }
+
+    function verifyAdminPassword() {
+      const pass = document.getElementById('admin-pass-input').value;
+      if (pass === '2850') {
+        closeAdminModal();
+        showToast("Admin Dashboard Unlocked");
+        navigateTo('admin-dashboard');
+      } else {
+        showToast("Invalid Admin Password!", true);
+      }
+    }
+
+    function setAdminTab(tab) {
+      adminActiveTab = tab;
+      renderAdminDashboard();
+    }
+
+    function renderAdminDashboard() {
+      const products = getProducts();
+      const orders = getOrders();
+      const reviews = JSON.parse(localStorage.getItem('aml_reviews')) || [];
+      const qrSettings = getQrSettings();
+
+      const html = `
+        <div class="bg-gray-100 min-h-full p-3 pb-16 space-y-3 text-xs">
+          <!-- Admin Header -->
+          <div class="bg-gray-900 text-white p-3.5 rounded-xl flex justify-between items-center shadow">
+            <div>
+              <h2 class="font-black text-sm text-amazon-orange tracking-wide">ADMIN CONTROL PANEL</h2>
+              <p class="text-[10px] text-gray-400">AMAZON LIGHT Store Manager</p>
+            </div>
+            <button onclick="navigateTo('home')" class="bg-rose-600 hover:bg-rose-700 text-white text-[10px] px-3 py-1 rounded font-bold shadow">
+              Exit Admin
+            </button>
+          </div>
+
+          <!-- Admin Tab Navigation Bar -->
+          <div class="bg-white p-1 rounded-xl shadow-sm border border-gray-200 flex overflow-x-auto no-scrollbar space-x-1 text-[11px] font-bold text-gray-600">
+            <button onclick="setAdminTab('qr')" class="flex-none px-3 py-1.5 rounded-lg ${adminActiveTab === 'qr' ? 'bg-amazon-orange text-white' : 'hover:bg-gray-100'}">
+              <i class="fa-solid fa-qrcode mr-1"></i> QR & Timers
+            </button>
+            <button onclick="setAdminTab('products')" class="flex-none px-3 py-1.5 rounded-lg ${adminActiveTab === 'products' ? 'bg-amazon-orange text-white' : 'hover:bg-gray-100'}">
+              <i class="fa-solid fa-box mr-1"></i> Products (${products.length})
+            </button>
+            <button onclick="setAdminTab('reviews')" class="flex-none px-3 py-1.5 rounded-lg ${adminActiveTab === 'reviews' ? 'bg-amazon-orange text-white' : 'hover:bg-gray-100'}">
+              <i class="fa-solid fa-star mr-1"></i> Add Reviews
+            </button>
+            <button onclick="setAdminTab('orders')" class="flex-none px-3 py-1.5 rounded-lg ${adminActiveTab === 'orders' ? 'bg-amazon-orange text-white' : 'hover:bg-gray-100'}">
+              <i class="fa-solid fa-truck-fast mr-1"></i> Orders (${orders.length})
+            </button>
+          </div>
+
+          <!-- TAB CONTENT 1: QR & Timer Management with FILE UPLOAD -->
+          ${adminActiveTab === 'qr' ? `
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-4">
+              <h3 class="font-extrabold text-xs text-gray-900 border-b pb-2 uppercase tracking-wider flex items-center justify-between">
+                <span>QR Code Image & Timer Config</span>
+                <i class="fa-solid fa-sliders text-amazon-orange"></i>
+              </h3>
+
+              <!-- QR Upload Preview Box -->
+              <div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl p-4 text-center space-y-2">
+                <p class="font-bold text-gray-800 text-xs">Current Active QR Code</p>
+                <img id="admin-qr-preview" src="${qrSettings.qrUrl}" class="w-40 h-40 object-contain mx-auto border bg-white p-2 rounded-lg shadow-sm" alt="QR Code Preview">
+                
+                <div class="pt-2">
+                  <label class="bg-amazon-yellow hover:bg-amazon-yellowHover text-gray-900 font-extrabold px-4 py-2 rounded-lg text-xs cursor-pointer shadow inline-block border border-yellow-500">
+                    <i class="fa-solid fa-upload mr-1"></i> Upload QR Code Image File
+                    <input type="file" id="admin-qr-file-input" accept="image/*" onchange="handleAdminQrFileUpload(event)" class="hidden">
+                  </label>
+                  <p class="text-[10px] text-gray-500 mt-1">Upload JPG/PNG image directly from your device</p>
+                </div>
+              </div>
+
+              <form onsubmit="handleSaveQrSettings(event)" class="space-y-3">
+                <input type="hidden" id="admin-qr-url" value="${qrSettings.qrUrl}">
+
+                <div class="grid grid-cols-2 gap-3 pt-2">
+                  <div>
+                    <label class="block font-bold text-gray-700 mb-1">QR Visible Timer (Sec)</label>
+                    <input type="number" id="admin-qr-timer" value="${qrSettings.qrTimerSec}" required class="w-full border p-2 rounded-lg text-xs outline-none focus:ring-2 focus:ring-amazon-orange">
+                    <span class="text-[9px] text-gray-400">Visible customer countdown</span>
+                  </div>
+
+                  <div>
+                    <label class="block font-bold text-gray-700 mb-1">Auto Success Timer (Sec)</label>
+                    <input type="number" id="admin-popup-timer" value="${qrSettings.popupTimerSec}" required class="w-full border p-2 rounded-lg text-xs outline-none focus:ring-2 focus:ring-amazon-orange">
+                    <span class="text-[9px] text-gray-400">Background trigger timer</span>
+                  </div>
+                </div>
+
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2.5 rounded-lg text-xs shadow uppercase tracking-wider">
+                  Save All QR & Timer Settings
+                </button>
+              </form>
+            </div>
+          ` : ''}
+
+          <!-- TAB CONTENT 2: Add & Manage Products -->
+          ${adminActiveTab === 'products' ? `
+            <div class="space-y-3">
+              <!-- Add New Product Form -->
+              <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3">
+                <h3 class="font-extrabold text-xs text-gray-900 border-b pb-2 uppercase">Add New Product Listing</h3>
+                <form onsubmit="handleAddProduct(event)" class="space-y-2.5">
+                  <div>
+                    <label class="block font-bold text-gray-700 mb-0.5">Product Title</label>
+                    <input type="text" id="new-prod-title" placeholder="e.g. Sony WH-1000XM5 Wireless Headphones" required class="w-full border p-2 rounded text-xs outline-none focus:ring-1 focus:ring-amazon-orange">
+                  </div>
+
+                  <div class="grid grid-cols-3 gap-2">
+                    <div>
+                      <label class="block font-bold text-gray-700 mb-0.5">Price (₹)</label>
+                      <input type="number" id="new-prod-price" placeholder="24990" required class="w-full border p-2 rounded text-xs outline-none">
+                    </div>
+                    <div>
+                      <label class="block font-bold text-gray-700 mb-0.5">MRP (₹)</label>
+                      <input type="number" id="new-prod-mrp" placeholder="34990" required class="w-full border p-2 rounded text-xs outline-none">
+                    </div>
+                    <div>
+                      <label class="block font-bold text-gray-700 mb-0.5">Category</label>
+                      <select id="new-prod-cat" class="w-full border p-2 rounded text-xs bg-white font-semibold">
+                        <option>Electronics</option>
+                        <option>Mobiles</option>
+                        <option>Fashion</option>
+                        <option>Fitness</option>
+                        <option>Home & Kitchen</option>
+                        <option>Gaming</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block font-bold text-gray-700 mb-0.5">Product Image (File or Image URL)</label>
+                    <input type="text" id="new-prod-img-url" placeholder="Paste Image URL or select file below" class="w-full border p-2 rounded text-xs outline-none mb-1">
+                    <input type="file" id="new-prod-img-file" accept="image/*" onchange="handleProductImgUpload(event)" class="text-xs text-gray-500">
+                  </div>
+
+                  <div>
+                    <label class="block font-bold text-gray-700 mb-0.5">Description</label>
+                    <textarea id="new-prod-desc" rows="2" placeholder="Enter product highlights..." class="w-full border p-2 rounded text-xs outline-none"></textarea>
+                  </div>
+
+                  <button type="submit" class="w-full bg-amazon-orange hover:bg-amazon-orangeDark text-white font-bold py-2 rounded text-xs shadow">
+                    Add Product to Catalog
+                  </button>
+                </form>
+              </div>
+
+              <!-- Existing Products List -->
+              <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-2">
+                <h3 class="font-extrabold text-xs text-gray-900 border-b pb-2 uppercase">Existing Catalog Products</h3>
+                <div class="space-y-2">
+                  ${products.map(p => `
+                    <div class="flex items-center justify-between border p-2 rounded-lg bg-gray-50 text-xs">
+                      <div class="flex items-center space-x-2">
+                        <img src="${p.image}" class="w-10 h-10 object-contain rounded bg-white border p-0.5" alt="${p.title}">
+                        <div>
+                          <p class="font-bold text-gray-900 line-clamp-1">${p.title}</p>
+                          <p class="text-gray-500">₹${p.price.toLocaleString()} <span class="line-through text-[10px]">₹${p.mrp.toLocaleString()}</span></p>
+                        </div>
+                      </div>
+                      <button onclick="handleDeleteProduct('${p.id}')" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 bg-rose-50 rounded border border-rose-200">
+                        Delete
+                      </button>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- TAB CONTENT 3: Add Editorial/Store Reviews -->
+          ${adminActiveTab === 'reviews' ? `
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3">
+              <h3 class="font-extrabold text-xs text-gray-900 border-b pb-2 uppercase">Add Product Review (Customer Visible)</h3>
+              <form onsubmit="handleAddReview(event)" class="space-y-2.5">
+                <div>
+                  <label class="block font-bold text-gray-700 mb-0.5">Select Product</label>
+                  <select id="review-prod-id" class="w-full border p-2 rounded text-xs bg-white font-semibold" required>
+                    ${products.map(p => `<option value="${p.id}">${p.title}</option>`).join('')}
+                  </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="block font-bold text-gray-700 mb-0.5">Author Name</label>
+                    <input type="text" id="review-author" value="Amazon Editorial Team" required class="w-full border p-2 rounded text-xs outline-none">
+                  </div>
+                  <div>
+                    <label class="block font-bold text-gray-700 mb-0.5">Star Rating (1 - 5)</label>
+                    <select id="review-rating" class="w-full border p-2 rounded text-xs bg-white font-semibold">
+                      <option value="5">5 Stars</option>
+                      <option value="4">4 Stars</option>
+                      <option value="3">3 Stars</option>
+                      <option value="2">2 Stars</option>
+                      <option value="1">1 Star</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block font-bold text-gray-700 mb-0.5">Review Headline / Title</label>
+                  <input type="text" id="review-title" placeholder="e.g. Top tier build quality and fast delivery!" required class="w-full border p-2 rounded text-xs outline-none">
+                </div>
+
+                <div>
+                  <label class="block font-bold text-gray-700 mb-0.5">Detailed Comment</label>
+                  <textarea id="review-comment" rows="2" placeholder="Write detailed feedback visible on the product page..." required class="w-full border p-2 rounded text-xs outline-none"></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-amazon-orange hover:bg-amazon-orangeDark text-white font-bold py-2 rounded text-xs shadow">
+                  Publish Review to Website
+                </button>
+              </form>
+
+              <!-- List of Current Admin Reviews -->
+              <div class="border-t pt-3 mt-4 space-y-2">
+                <h4 class="font-bold text-gray-800 text-xs">Published Editorial Reviews (${reviews.length})</h4>
+                ${reviews.map(r => `
+                  <div class="border p-2 rounded-lg bg-gray-50 flex justify-between items-start text-xs">
+                    <div>
+                      <p class="font-bold text-gray-900">${r.title}</p>
+                      <p class="text-gray-600 text-[11px]">${r.comment}</p>
+                      <span class="text-amber-500 text-[10px]">${r.rating} Stars - ${r.author}</span>
+                    </div>
+                    <button onclick="handleDeleteReview('${r.id}')" class="text-rose-600 text-[10px] font-bold">Delete</button>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- TAB CONTENT 4: Order Pipeline Updates -->
+          ${adminActiveTab === 'orders' ? `
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3">
+              <h3 class="font-extrabold text-xs text-gray-900 border-b pb-2 uppercase">Order Status & Tracking Pipeline</h3>
+              ${orders.length === 0 ? '<p class="text-gray-400 italic text-center py-4">No customer orders placed yet.</p>' : ''}
+              ${orders.map(o => `
+                <div class="border p-3 rounded-lg space-y-2 bg-gray-50">
+                  <div class="flex justify-between font-bold">
+                    <span>#${o.id}</span>
+                    <span class="text-amazon-orange">${o.status}</span>
+                  </div>
+                  <div class="text-[11px] text-gray-600">
+                    <span>Date: ${o.date} | Total: ₹${o.total.toLocaleString()}</span>
+                  </div>
+                  <div class="flex space-x-2 pt-1">
+                    <select id="status-select-${o.id}" class="flex-1 border p-1.5 rounded text-xs bg-white font-semibold">
+                      <option ${o.status === 'Order Placed' ? 'selected' : ''}>Order Placed</option>
+                      <option ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                      <option ${o.status === 'Packed' ? 'selected' : ''}>Packed</option>
+                      <option ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                      <option ${o.status === 'Out for Delivery' ? 'selected' : ''}>Out for Delivery</option>
+                      <option ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                    </select>
+                    <button onclick="updateOrderStatus('${o.id}')" class="bg-amazon-orange text-white font-bold px-3 py-1 rounded">Update</button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+
+        </div>
+      `;
+      document.getElementById('main-content').innerHTML = html;
+    }
+
+    /* Admin Action Handlers */
+    function handleAdminQrFileUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const dataUrl = e.target.result;
+          document.getElementById('admin-qr-url').value = dataUrl;
+          document.getElementById('admin-qr-preview').src = dataUrl;
+          showToast("QR Code Image Loaded! Click Save to apply.");
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function handleSaveQrSettings(e) {
+      e.preventDefault();
+      const url = document.getElementById('admin-qr-url').value;
+      const qrSec = document.getElementById('admin-qr-timer').value;
+      const popupSec = document.getElementById('admin-popup-timer').value;
+
+      const newSettings = { qrUrl: url, qrTimerSec: qrSec, popupTimerSec: popupSec };
+      localStorage.setItem('aml_qr_settings', JSON.stringify(newSettings));
+      showToast("QR Code & Timer Settings Saved!");
+    }
+
+    let uploadedProductImageBase64 = "";
+    function handleProductImgUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          uploadedProductImageBase64 = e.target.result;
+          document.getElementById('new-prod-img-url').value = "Uploaded Image File";
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function handleAddProduct(e) {
+      e.preventDefault();
+      const products = getProducts();
+      const title = document.getElementById('new-prod-title').value;
+      const price = parseFloat(document.getElementById('new-prod-price').value);
+      const mrp = parseFloat(document.getElementById('new-prod-mrp').value);
+      const category = document.getElementById('new-prod-cat').value;
+      const desc = document.getElementById('new-prod-desc').value;
+      let imgUrl = document.getElementById('new-prod-img-url').value;
+
+      if (uploadedProductImageBase64) {
+        imgUrl = uploadedProductImageBase64;
+      } else if (!imgUrl || imgUrl === "Uploaded Image File") {
+        imgUrl = "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=500&q=80";
+      }
+
+      const discount = Math.round(((mrp - price) / mrp) * 100);
+
+      const newProduct = {
+        id: 'prod-' + Date.now(),
+        title,
+        price,
+        mrp,
+        discount: discount > 0 ? discount : 0,
+        rating: 5.0,
+        reviewsCount: 1,
+        category,
+        inStock: true,
+        image: imgUrl,
+        description: desc || "High quality product on Amazon Light."
+      };
+
+      products.unshift(newProduct);
+      setProducts(products);
+      uploadedProductImageBase64 = "";
+      showToast("New Product Added to Store!");
+      renderAdminDashboard();
+    }
+
+    function handleDeleteProduct(id) {
+      let products = getProducts().filter(p => p.id !== id);
+      setProducts(products);
+      showToast("Product Deleted!");
+      renderAdminDashboard();
+    }
+
+    function handleAddReview(e) {
+      e.preventDefault();
+      const reviews = JSON.parse(localStorage.getItem('aml_reviews')) || [];
+      const productId = document.getElementById('review-prod-id').value;
+      const author = document.getElementById('review-author').value;
+      const rating = parseInt(document.getElementById('review-rating').value);
+      const title = document.getElementById('review-title').value;
+      const comment = document.getElementById('review-comment').value;
+
+      const newReview = {
+        id: 'rev-' + Date.now(),
+        productId,
+        author,
+        isStoreReview: true,
+        rating,
+        title,
+        comment
+      };
+
+      reviews.unshift(newReview);
+      localStorage.setItem('aml_reviews', JSON.stringify(reviews));
+      showToast("Review Published!");
+      renderAdminDashboard();
+    }
+
+    function handleDeleteReview(id) {
+      let reviews = (JSON.parse(localStorage.getItem('aml_reviews')) || []).filter(r => r.id !== id);
+      localStorage.setItem('aml_reviews', JSON.stringify(reviews));
+      showToast("Review Removed!");
+      renderAdminDashboard();
+    }
+
+    function updateOrderStatus(id) {
+      const select = document.getElementById(`status-select-${id}`);
+      const orders = getOrders();
+      const idx = orders.findIndex(o => o.id === id);
+      if (idx !== -1) {
+        orders[idx].status = select.value;
+        setOrders(orders);
+        showToast(`Order #${id} updated to ${select.value}`);
+      }
+    }
+
+    /* ==========================================================================
+       CART & ACTION HELPERS
+       ========================================================================== */
+
+    function addToCart(productId, showNotification = true) {
+      let cart = getCart();
+      const existing = cart.find(x => x.productId === productId);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({ productId, qty: 1 });
+      }
+      setCart(cart);
+      if (showNotification) showToast("Added to Cart!");
+    }
+
+    function buyNow(productId) {
+      addToCart(productId, false);
+      navigateTo('address');
+    }
+
+    function updateCartQty(productId, delta) {
+      let cart = getCart();
+      const idx = cart.findIndex(x => x.productId === productId);
+      if (idx !== -1) {
+        cart[idx].qty += delta;
+        if (cart[idx].qty <= 0) {
+          cart.splice(idx, 1);
+        }
+      }
+      setCart(cart);
+      renderCartView();
+    }
+
+    function removeFromCart(productId) {
+      let cart = getCart().filter(x => x.productId !== productId);
+      setCart(cart);
+      renderCartView();
+    }
+
+    function toggleWishlist(productId) {
+      let wishlist = getWishlist();
+      if (wishlist.includes(productId)) {
+        wishlist = wishlist.filter(id => id !== productId);
+        showToast("Removed from Wishlist");
+      } else {
+        wishlist.push(productId);
+        showToast("Saved to Wishlist");
+      }
+      setWishlist(wishlist);
+      navigateTo(currentView, selectedProductId);
+    }
+
+    function handleAddressSubmit(e) {
+      e.preventDefault();
+      const newAddr = {
+        name: document.getElementById('addr-name').value,
+        mobile: document.getElementById('addr-mobile').value,
+        flat: document.getElementById('addr-flat').value,
+        area: document.getElementById('addr-area').value,
+        pincode: document.getElementById('addr-pincode').value,
+        city: document.getElementById('addr-city').value,
+        state: document.getElementById('addr-state').value,
+        isDefault: true
+      };
+      localStorage.setItem('aml_addresses', JSON.stringify([newAddr]));
+      document.getElementById('header-location-text').innerText = `Delivering to ${newAddr.city} ${newAddr.pincode} - Update location`;
+      navigateTo('payment');
+    }
+
+    function handleSearch(query) {
+      if (currentView !== 'home') navigateTo('home');
+      const q = query.toLowerCase().trim();
+      const products = getProducts();
+      const filtered = products.filter(p => p.title.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
+      
+      // If query exists, dynamic filtering can be rendered
+    }
+
+    function showToast(msg, isError = false) {
+      const toast = document.getElementById('toast');
+      toast.innerText = msg;
+      toast.className = `fixed top-14 left-1/2 transform -translate-x-1/2 text-xs px-4 py-2.5 rounded-full z-50 transition-all duration-300 shadow-lg text-center max-w-xs ${isError ? 'bg-rose-600 text-white' : 'bg-gray-900/90 text-white'}`;
+      toast.classList.remove('hidden');
+      setTimeout(() => { toast.classList.add('hidden'); }, 2500);
+    }
+
+    /* ==========================================================================
+       APP BOOTSTRAP
+       ========================================================================== */
+    window.onload = function() {
+      initData();
+      updateCartBadge();
+      navigateTo('home');
+    };
+  </script>
+</body>
+</html>
